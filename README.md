@@ -4,6 +4,8 @@ Minecraft에서 영감을 받은 **1인칭 3D 복셀 샌드박스 웹 게임**�
 HTML5, CSS3, Vanilla JavaScript(ES6+)와 브라우저 내장 **WebGL API**만으로 만들었으며,
 외부 라이브러리·빌드 도구·서버·이미지 파일 없이 `index.html` 하나를 열면 바로 실행됩니다.
 
+**▶ 바로 플레이: https://woochoi.github.io/minecraft/** (데스크톱 Chrome 권장)
+
 - 24 × 24 블록 크기의 자연스러운 언덕 지형 (잔디 / 흙 / 돌 지층 + 나무)
 - 시드(Seed) 기반 지형 생성 → 같은 시드면 항상 같은 월드
 - 블록 제거 / 설치, 중력·점프·충돌 처리
@@ -13,6 +15,10 @@ HTML5, CSS3, Vanilla JavaScript(ES6+)와 브라우저 내장 **WebGL API**만으
 ---
 
 ## 실행 방법
+
+### 0) 웹에서 바로 실행
+https://woochoi.github.io/minecraft/ 에 접속해 **GAME START** 를 누르면 됩니다.
+(GitHub Pages 로 `main` 브랜치 루트가 배포됩니다. 시드 지정: `https://woochoi.github.io/minecraft/?seed=2024`)
 
 ### 1) 파일로 바로 실행
 1. 저장소를 내려받습니다.
