@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mini Block World</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- 3D 월드가 그려지는 WebGL 캔버스 -->
+  <canvas id="game-canvas"></canvas>
+
+  <!-- 게임 중 HUD: 조준점, 디버그 정보, 핫바 -->
+  <div id="hud" class="hidden">
+    <div id="crosshair" aria-hidden="true"></div>
+
+    <div id="debug-panel" class="panel">
+      <div id="fps">FPS: --</div>
+      <div id="coords">X: 0.0 &nbsp;Y: 0.0 &nbsp;Z: 0.0</div>
+      <div id="target-info">조준: 없음</div>
+    </div>
+
+    <div id="lock-hint" class="hidden">화면을 클릭하면 마우스 시점 조작이 시작됩니다</div>
+
+    <div id="hotbar-wrap">
+      <div id="block-name">잔디</div>
+      <div id="hotbar"></div>
+    </div>
+  </div>
+
+  <!-- 시작 화면 -->
+  <div id="title-screen" class="screen">
+    <div class="title-box">
+      <h1 class="game-title">MINI BLOCK WORLD</h1>
+      <p class="subtitle">미니 블록 월드 · 3D 복셀 샌드박스</p>
+
+      <button id="start-button" class="mc-button">GAME START</button>
+
+      <div class="controls panel">
+        <h3>조작법</h3>
+        <ul>
+          <li><span class="key-cap">W A S D</span> 이동</li>
+          <li><span class="key-cap">Space</span> 점프</li>
+          <li><span class="key-cap">마우스</span> 시점 회전</li>
+          <li><span class="key-cap">좌클릭</span> 블록 제거</li>
+          <li><span class="key-cap">우클릭</span> 블록 설치</li>
+          <li><span class="key-cap">1 ~ 5 / 휠</span> 블록 선택</li>
+          <li><span class="key-cap">ESC</span> 일시정지 메뉴</li>
+        </ul>
+      </div>
+      <p class="seed-info">시드: <span class="seed-label">-</span></p>
+      <p id="title-message" class="error-text hidden"></p>
+    </div>
+  </div>
+
+  <!-- ESC 일시정지 메뉴 -->
+  <div id="pause-screen" class="screen hidden">
+    <div class="menu-box panel">
+      <h2>일시정지</h2>
+      <button id="resume-button" class="mc-button">게임 계속하기</button>
+      <button id="save-button" class="mc-button">월드 저장</button>
+      <button id="reset-button" class="mc-button">월드 초기화</button>
+      <p id="pause-hint" class="hint-text"></p>
+      <p class="seed-info">시드: <span class="seed-label">-</span> · 변경 사항은 자동 저장됩니다</p>
+    </div>
+  </div>
+
+  <!-- 알림 메시지 -->
+  <div id="toast-container" aria-live="polite"></div>
+
+  <noscript>
+    <div class="screen"><p>이 게임을 실행하려면 JavaScript를 활성화해야 합니다.</p></div>
+  </noscript>
+
+  <!--
+    ES 모듈을 쓰지 않고 일반 스크립트로 순서대로 로드한다.
+    (file:// 로 직접 열어도 CORS 문제 없이 동작하도록)
+    모든 기능은 window.MBW 네임스페이스에 등록된다.
+  -->
+  <script src="js/blocks.js"></script>
+  <script src="js/renderer.js"></script>
+  <script src="js/world.js"></script>
+  <script src="js/physics.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/player.js"></script>
+  <script src="js/input.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
