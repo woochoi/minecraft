@@ -18,6 +18,9 @@
 
   const State = Object.freeze({ TITLE: 'title', PLAYING: 'playing', PAUSED: 'paused' });
 
+  // 발밑에 블록을 놓고 올라설 때 블록 윗면과 발 사이에 남기는 틈 (물리의 SKIN 과 같은 값)
+  const PLACE_LIFT_GAP = 1e-3;
+
   /** 게임 전체 상태 (개발자 도구에서 MBW.game 으로 확인 가능) */
   const game = {
     state: State.TITLE,
@@ -230,8 +233,11 @@
     if (game.world.setBlock(t.x, t.y, t.z, BlockType.AIR)) applyWorldEdit();
   }
 
-  /** 우클릭: 조준 블록의 맞닿은 면 바깥 칸에 선택 블록 설치 */
-  function placeBlock() {
+  /**
+   * 우클릭: 조준 블록의 맞닿은 면 바깥 칸에 선택 블록 설치
+   * @param {boolean} isRepeat 누르고 있어 반복 호출된 경우 (안내 메시지 생략)
+   */
+  function placeBlock(isRepeat = false) {
     updateTarget();
     const t = game.target;
     if (!t) return;
@@ -246,10 +252,38 @@
       return;
     }
     if (game.world.getBlock(x, y, z) !== BlockType.AIR) return;
-    // 플레이어 몸과 겹치는 위치에는 설치 불가
-    if (Physics.boxIntersectsBlock(game.player.getBox(), x, y, z)) return;
 
-    if (game.world.setBlock(x, y, z, game.player.getSelectedBlock())) applyWorldEdit();
+    // 플레이어 몸과 겹치는 위치: 발이 있는 칸이면 블록 위로 올려 주고(구멍 탈출용), 아니면 설치 불가
+    const player = game.player;
+    let liftTo = null;
+    if (Physics.boxIntersectsBlock(player.getBox(), x, y, z)) {
+      liftTo = getStandOnTopY(x, y, z);
+      if (liftTo === null) {
+        if (!isRepeat) game.ui.toast('플레이어 몸과 겹치는 위치에는 설치할 수 없습니다.');
+        return;
+      }
+    }
+
+    if (!game.world.setBlock(x, y, z, player.getSelectedBlock())) return;
+    if (liftTo !== null) {
+      // 보간 기준점도 함께 옮겨 화면이 아래에서 끌려 올라오지 않게 한다
+      player.prevPosition[1] += liftTo - player.position[1];
+      player.position[1] = liftTo;
+      if (player.velocity[1] < 0) player.velocity[1] = 0;
+    }
+    applyWorldEdit();
+  }
+
+  /**
+   * (x, y, z) 칸에 블록을 놓을 때 플레이어를 그 위에 세울 수 있으면 새 발 높이를, 아니면 null.
+   * 발이 그 칸 안에 있고, 한 칸 올라선 자리가 비어 있어야(머리 위 공간) 가능하다.
+   */
+  function getStandOnTopY(x, y, z) {
+    const pos = game.player.position;
+    if (pos[1] < y || pos[1] >= y + 1) return null;
+    const lifted = [pos[0], y + 1 + PLACE_LIFT_GAP, pos[2]];
+    if (Physics.boxCollidesWorld(game.world, Physics.getPlayerBox(lifted))) return null;
+    return lifted[1];
   }
 
   /** 블록 변경 직후: 바뀐 청크만 즉시 다시 만들고 조준 정보 갱신 */
@@ -270,7 +304,7 @@
     if (held.timer <= 0) {
       held.timer += CONFIG.ACTION_REPEAT_INTERVAL;
       if (held.button === 0) breakBlock();
-      else placeBlock();
+      else placeBlock(true);
     }
   }
 
